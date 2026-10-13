@@ -137,21 +137,37 @@ class RegistrationServiceTest {
         Student student = new Student("S103", "Priya");
         RegistrationService service = new RegistrationService();
 
-        Course firstCourse = new Course(
-                "CS301", "Data Structures", 4, 30, true, null
+        Course originalCourse = new Course(
+                "CS101", "Programming Fundamentals", 4, 30, true, null
         );
 
-        Course secondCourse = new Course(
-                "cs301", "Data Structures", 4, 30, true, null
+        Course lowercaseCourse = new Course(
+                "cs101", "Programming Fundamentals", 4, 30, true, null
         );
 
-        assertTrue(service.register(student, firstCourse));
-        assertFalse(service.register(student, secondCourse));
+        Course mixedCaseCourse = new Course(
+                "Cs101", "Programming Fundamentals", 4, 30, true, null
+        );
 
-        assertTrue(student.isRegistered("CS301"));
+        // Initial registration must succeed.
+        assertTrue(service.register(student, originalCourse));
+        assertTrue(student.isRegistered("CS101"));
         assertEquals(4, student.getTotalCredits());
-        assertEquals(1, firstCourse.getCurrentEnrollment());
-        assertEquals(0, secondCourse.getCurrentEnrollment());
+        assertEquals(1, originalCourse.getCurrentEnrollment());
+
+        // A lowercase duplicate must be rejected without changing state.
+        assertFalse(service.register(student, lowercaseCourse));
+        assertEquals(4, student.getTotalCredits());
+        assertEquals(1, originalCourse.getCurrentEnrollment());
+        assertEquals(0, lowercaseCourse.getCurrentEnrollment());
+
+        // A mixed-case duplicate must also be rejected.
+        assertFalse(service.register(student, mixedCaseCourse));
+        assertTrue(student.isRegistered("CS101"));
+        assertEquals(4, student.getTotalCredits());
+        assertEquals(1, originalCourse.getCurrentEnrollment());
+        assertEquals(0, lowercaseCourse.getCurrentEnrollment());
+        assertEquals(0, mixedCaseCourse.getCurrentEnrollment());
     }
 
     @Test
