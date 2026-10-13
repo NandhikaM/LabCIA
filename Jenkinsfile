@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Source code is provided by the configured Jenkins workspace.'
+                checkout scm
                 bat 'git status'
             }
         }
@@ -22,14 +22,15 @@ pipeline {
             }
             post {
                 always {
-                    junit 'target/surefire-reports/TEST-*.xml'
+                    junit 'course-registration-app/target/surefire-reports/TEST-*.xml'
                 }
             }
         }
         stage('Package') {
             steps {
                 bat 'mvn package'
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                archiveArtifacts artifacts: 'course-registration-app/target/*.jar',
+                                 fingerprint: true
             }
         }
     }
