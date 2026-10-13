@@ -1,9 +1,11 @@
 pipeline {
     agent any
+
     tools {
-        jdk 'JDK17'
+        jdk 'JDK25'
         maven 'Maven3'
     }
+
     stages {
         stage('Checkout') {
             steps {
@@ -11,11 +13,15 @@ pipeline {
                 bat 'git status'
             }
         }
+
         stage('Build') {
             steps {
+                bat 'java -version'
+                bat 'mvn -version'
                 bat 'mvn clean compile'
             }
         }
+
         stage('Test') {
             steps {
                 bat 'mvn test'
@@ -26,6 +32,7 @@ pipeline {
                 }
             }
         }
+
         stage('Package') {
             steps {
                 bat 'mvn package'
