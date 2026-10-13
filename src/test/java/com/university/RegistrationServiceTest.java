@@ -150,4 +150,62 @@ class RegistrationServiceTest {
         assertFalse(result);
         assertFalse(student.isRegistered("CS301"));
     }
+
+    @Test
+    void shouldRejectRegistrationWhenCourseIsFull() {
+
+        Student firstStudent = new Student("S101", "Anita");
+        Student secondStudent = new Student("S102", "Rahul");
+
+        Course course = new Course(
+                "CS301",
+                "Data Structures",
+                4,
+                1,
+                true,
+                null
+        );
+
+        RegistrationService service = new RegistrationService();
+
+        assertTrue(service.register(firstStudent, course));
+        assertFalse(service.register(secondStudent, course));
+
+        assertFalse(secondStudent.isRegistered("CS301"));
+        assertEquals(1, course.getCurrentEnrollment());
+        assertEquals(0, secondStudent.getTotalCredits());
+    }
+
+    @Test
+    void shouldRejectDuplicateRegistrationWithDifferentCase() {
+
+        Student student = new Student("S103", "Priya");
+        RegistrationService service = new RegistrationService();
+
+        Course firstCourse = new Course(
+                "CS301",
+                "Data Structures",
+                4,
+                30,
+                true,
+                null
+        );
+
+        Course secondCourse = new Course(
+                "cs301",
+                "Data Structures",
+                4,
+                30,
+                true,
+                null
+        );
+
+        assertTrue(service.register(student, firstCourse));
+        assertFalse(service.register(student, secondCourse));
+
+        assertTrue(student.isRegistered("CS301"));
+        assertEquals(4, student.getTotalCredits());
+        assertEquals(1, firstCourse.getCurrentEnrollment());
+        assertEquals(0, secondCourse.getCurrentEnrollment());
+    }
 }
